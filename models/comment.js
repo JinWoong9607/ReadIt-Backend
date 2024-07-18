@@ -13,7 +13,27 @@ class Comment extends Sequelize.Model {
                     type: Sequelize.STRING(100),
                     allowNull: false
                 },
-                comment: {
+                id: {
+                    type: Sequelize.STRING(100),
+                    allowNull: false
+                },
+                parentId: {
+                    type: Sequelize.INTEGER,
+                    allowNull: true
+                },
+                author: {
+                    type: Sequelize.STRING(100),
+                    allowNull: false
+                },
+                score: {
+                    type: Sequelize.STRING(100),
+                    allowNull: false
+                },
+                time: {
+                    type: Sequelize.STRING(100),
+                    allowNull: false
+                },
+                body: {
                     type: Sequelize.STRING(500),
                     allowNull: false
                 },
@@ -22,20 +42,22 @@ class Comment extends Sequelize.Model {
                     allowNull: false,
                     defaultValue: 0
                 },
-                likes: {
-                    type: Sequelize.INTEGER,
+                stickied: {
+                    type: Sequelize.BOOLEAN,
                     allowNull: false,
-                    defaultValue: 0
                 },
-                dislikes: {
-                    type: Sequelize.INTEGER,
-                    allowNull: false,
-                    defaultValue: 0
+                directURL: {
+                    type: Sequelize.STRING(500),
+                    allowNull: false
                 },
-                parentCommentId: {
-                    type: Sequelize.INTEGER,
-                    allowNull: true
-                }
+                isCollapsed: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
+                isRootCollapsed: {
+                    type: Sequelize.BOOLEAN,
+                    allowNull: false
+                },
             },
             {
                 sequelize,

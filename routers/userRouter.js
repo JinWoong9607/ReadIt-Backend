@@ -3,7 +3,9 @@ const { User } = require('../models/index');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const isAuth = require('./authorization');
 const secret = process.env.JWT_SECRET;
+
 
 const createHash = async (password, saltRound) => {
     let hashed = await bcrypt.hash(password, saltRound);
@@ -13,25 +15,42 @@ const createHash = async (password, saltRound) => {
 
 router.post('/signup', async (req, res) => {
     const { username, password } = req.body;
-    const saltRound = 10;
-    const hashed = await createHash(password, saltRound);
-    const user = await User.create({
-        username,
-        password: hashed,
-    });
     try {
-        const result = await User.create(user);
-        res.json({ success: true, member: result , message: 'User created' });
+        // 중복 사용자 검사
+        const existingUser = await User.findOne({ where: { userId: username } });
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: 'Username already taken. Please choose another one.'
+            });
+        }
+
+        const saltRound = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRound);
+        const user = await User.create({
+            userId: username,
+            password: hashedPassword,
+        });
+
+        res.json({
+            success: true,
+            message: 'User created successfully.',
+            user
+        });
     } catch (err) {
-        res.status(400).json({ success: false, member: [], message: 'User creation failed' });
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error.'
+        });
     }
 });
 
 router.post('/sign-in', async (req, res) => {
-    const { userId, password } = req.body;
+    const { username, password } = req.body;
     const options = {
         attributes: ['userId', 'password'],
-        where: { userId: userId },
+        where: { userId: username },
     };
     const result = await User.findOne(options);
     if (result) {
