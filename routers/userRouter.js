@@ -21,7 +21,7 @@ router.post('/signup', async (req, res) => {
         if (existingUser) {
             return res.status(409).json({
                 success: false,
-                message: 'Username already taken. Please choose another one.'
+                message: 'ID already taken. Please choose another one.'
             });
         }
 
