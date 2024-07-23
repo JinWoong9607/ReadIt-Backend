@@ -2,6 +2,7 @@ const express = require('express');
 const { User } = require('../models/index');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const isAuth = require('./authorization');
 const secret = process.env.JWT_SECRET;
@@ -15,13 +16,14 @@ const createHash = async (password, saltRound) => {
 
 router.post('/signup', async (req, res) => {
     const { username, password } = req.body;
+    console.log('Signup attempt:', { username, password });
     try {
         // 중복 사용자 검사
         const existingUser = await User.findOne({ where: { userId: username } });
         if (existingUser) {
             return res.status(409).json({
                 success: false,
-                message: 'ID already taken. Please choose another one.'
+                message: 'already taken. Please choose another one.'
             });
         }
 
@@ -38,7 +40,8 @@ router.post('/signup', async (req, res) => {
             user
         });
     } catch (err) {
-        console.error(err);
+        console.error("An error occurred:", err.message);
+        console.error(err.stack);  
         res.status(500).json({
             success: false,
             message: 'Internal server error.'

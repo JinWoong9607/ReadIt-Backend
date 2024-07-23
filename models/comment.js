@@ -17,7 +17,7 @@ class Comment extends Sequelize.Model {
                     type: Sequelize.STRING(100),
                     allowNull: false
                 },
-                parentId: {
+                parentCommentId: { 
                     type: Sequelize.INTEGER,
                     allowNull: true
                 },
@@ -26,12 +26,14 @@ class Comment extends Sequelize.Model {
                     allowNull: false
                 },
                 score: {
-                    type: Sequelize.STRING(100),
-                    allowNull: false
+                    type: Sequelize.INTEGER,  
+                    allowNull: false,
+                    defaultValue: 0 
                 },
                 time: {
-                    type: Sequelize.STRING(100),
-                    allowNull: false
+                    type: Sequelize.DATE, 
+                    allowNull: false,
+                    defaultValue: Sequelize.NOW 
                 },
                 body: {
                     type: Sequelize.STRING(500),
@@ -45,6 +47,7 @@ class Comment extends Sequelize.Model {
                 stickied: {
                     type: Sequelize.BOOLEAN,
                     allowNull: false,
+                    defaultValue: false
                 },
                 directURL: {
                     type: Sequelize.STRING(500),
@@ -52,17 +55,19 @@ class Comment extends Sequelize.Model {
                 },
                 isCollapsed: {
                     type: Sequelize.BOOLEAN,
-                    allowNull: false
+                    allowNull: false,
+                    defaultValue: false
                 },
                 isRootCollapsed: {
                     type: Sequelize.BOOLEAN,
-                    allowNull: false
+                    allowNull: false,
+                    defaultValue: false
                 },
             },
             {
                 sequelize,
                 timestamps: true,
-                paranoid: true,
+                paranoid: true, 
                 modelName: 'Comment',
                 tableName: 'comment',
             }
@@ -71,7 +76,7 @@ class Comment extends Sequelize.Model {
 
     static associate(db) {
         db.Comment.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'userId' });
-        db.Comment.belongsTo(db.Comment, { foreignKey: 'parentCommentId', targetKey: 'commentId' });
+        db.Comment.belongsTo(db.Comment, { as: 'ParentComment', foreignKey: 'parentCommentId', targetKey: 'commentId' });  // 관계 설정에 as 옵션 추가
     }
 }
 
