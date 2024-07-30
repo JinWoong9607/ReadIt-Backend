@@ -7,13 +7,11 @@ class Comment extends Sequelize.Model {
                 commentId: {
                     type: Sequelize.INTEGER,
                     autoIncrement: true,
-                    primaryKey: true
+                    primaryKey: true,
+                    allowNull: false,
+                    unique: true
                 },
                 userId: {
-                    type: Sequelize.STRING(100),
-                    allowNull: false
-                },
-                id: {
                     type: Sequelize.STRING(100),
                     allowNull: false
                 },
@@ -31,12 +29,16 @@ class Comment extends Sequelize.Model {
                     defaultValue: 0 
                 },
                 time: {
-                    type: Sequelize.DATE, 
+                    type: Sequelize.STRING(100), 
                     allowNull: false,
                     defaultValue: Sequelize.NOW 
                 },
                 body: {
-                    type: Sequelize.STRING(500),
+                    type: Sequelize.TEXT,
+                    allowNull: false
+                },
+                commentBody: {
+                    type: Sequelize.TEXT,
                     allowNull: false
                 },
                 depth: {
@@ -70,13 +72,22 @@ class Comment extends Sequelize.Model {
                 paranoid: true, 
                 modelName: 'Comment',
                 tableName: 'comment',
+                indexes: [
+                    {
+                        fields: ['commentId']
+                    },
+                    {
+                        fields: ['parentCommentId']
+                    },
+                ]
             }
         );
     }
 
     static associate(db) {
         db.Comment.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'userId' });
-        db.Comment.belongsTo(db.Comment, { as: 'ParentComment', foreignKey: 'parentCommentId', targetKey: 'commentId' });  // 관계 설정에 as 옵션 추가
+        db.Comment.belongsTo(db.Comment, { as: 'ParentComment', foreignKey: 'parentCommentId', targetKey: 'commentId' });
+        db.Comment.hasMany(db.Comment, { as: 'ChildComments', foreignKey: 'parentCommentId' }); // 부모-자식 관계 추가
     }
 }
 

@@ -14,6 +14,7 @@ const checkAuth = require('./routers/authorization');
 const userRouter = require('./routers/userRouter');
 const dictionaryRouter = require('./routers/dictionaryRouter');
 const commentRouter = require('./routers/commentRouter');
+const translator = require('./routers/translator');
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use('/dictionary', checkAuth);
 app.use('/comment', commentRouter);
 app.use('/dictionary', dictionaryRouter);
 app.use('isAuth', checkAuth);
+app.use('/translate', translator);
 
 app.use((req, res, next) => {
     res.status(404).send('404 Not Found');

@@ -5,12 +5,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const secret = process.env.JWT_SECRET;
 
-router.post('/comment', async (req, res) => {    
-    const { 
+router.post('/create', async (req, res) => {    
+    const {
+        commentId,
         body, 
         userId,
         author,
         parentCommentId,
+        commentBody,
         score,
         time,
         depth,
@@ -20,12 +22,18 @@ router.post('/comment', async (req, res) => {
         isRootCollapsed,
          } = req.body;
 
+        console.log('Preparing to create comment with:', req.body);
+         
+        console.log('Received input:', { commentId, body, userId, author, parentCommentId, commentBody, score, time, depth, stickied, directURL, isCollapsed, isRootCollapsed });
+
         const transaction = await sequelize.transaction();
     try {
         const comment = await Comment.create({
+            commentId,
             userId,
             author,
             parentCommentId,
+            commentBody,
             score,
             time,
             body,
@@ -53,5 +61,90 @@ router.post('/comment', async (req, res) => {
         });
     }
 }); 
+
+router.get('/read/*', async (req, res) => {
+    try {
+        const directURL = req.params[0];
+
+        const comments = await Comment.findAll({
+            where: {
+                directURL: directURL
+            }
+        });
+
+        if (comments.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '댓글이 없습니다. 첫 댓글을 작성해보세요.'
+            });
+        }
+
+        res.json(comments);
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error.'
+        });
+    }
+}
+);
+
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        console.log('userId:', userId);
+
+        const comments = await Comment.findAll({
+            where: {
+                userId: userId,
+                depth: 0,
+            }
+        });
+
+        if (comments.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '댓글이 없습니다. 첫 댓글을 작성해보세요.'
+            });
+        }
+
+        res.json(comments);
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error.'
+        });
+    }
+});
+
+router.get('/comment/:commentBody(*)', async (req, res) => {
+    try {
+        const commentBody = req.params.commentBody;
+        console.log('commentBody:', commentBody);
+
+        const comments = await Comment.findAll({
+            where: {
+                commentBody: commentBody
+            }
+        });
+
+        if (comments.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: '댓글이 없습니다. 첫 댓글을 작성해보세요.'
+            });
+        }
+
+        res.json(comments);
+    } catch (error) {
+        console.error('An error occurred:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error.'
+        });
+    }
+});
 
 module.exports = router;
