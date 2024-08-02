@@ -1,5 +1,6 @@
 const express = require('express');
 const { Comment, sequelize } = require('../models');
+const { Sequelize, Op } = require('sequelize');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -95,11 +96,23 @@ router.get('/user/:userId', async (req, res) => {
         const userId = req.params.userId;
         console.log('userId:', userId);
 
-        const comments = await Comment.findAll({
-            where: {
-                userId: userId,
-                depth: 0,
-            }
+        const subquery = `
+            SELECT c1.*
+            FROM comment c1
+            INNER JOIN (
+                SELECT directURL, MAX(time) as max_time
+                FROM comment
+                WHERE userId = :userId AND depth = 0 AND deletedAt IS NULL
+                GROUP BY directURL
+            ) c2 ON c1.directURL = c2.directURL AND c1.time = c2.max_time
+            WHERE c1.userId = :userId AND c1.depth = 0 AND c1.deletedAt IS NULL
+        `;
+
+        const comments = await Comment.sequelize.query(subquery, {
+            replacements: { userId },
+            type: Sequelize.QueryTypes.SELECT,
+            model: Comment,
+            mapToModel: true
         });
 
         if (comments.length === 0) {
@@ -111,13 +124,14 @@ router.get('/user/:userId', async (req, res) => {
 
         res.json(comments);
     } catch (error) {
-        console.error('An error occurred:', error.message);
+        console.error('An error occurred:', error);
         res.status(500).json({
             success: false,
             message: 'Internal server error.'
         });
     }
 });
+
 
 router.get('/comment/:commentBody(*)', async (req, res) => {
     try {

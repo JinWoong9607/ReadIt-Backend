@@ -10,37 +10,63 @@ const headers = {
 };
 const endpoint = process.env.GPT4V_ENDPOINT;
 
+console.log('API Key:', process.env.GPT4V_KEY ? '설정됨' : '설정되지 않음');
+console.log('Endpoint:', endpoint);
+
 // Function to send translation requests to the API
 function sendTranslationRequest(payload) {
+    console.log('Sending request to API...');
+    console.log('Payload:', JSON.stringify(payload, null, 2));
+
     return fetch(endpoint, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify(payload)
     })
     .then(response => {
+        console.log('API Response Status:', response.status);
         if (!response.ok) {
             throw new Error(`Failed to fetch: ${response.statusText}`);
         }
         return response.json();
+    })
+    .then(data => {
+        console.log('API Response Data:', JSON.stringify(data, null, 2));
+        return data;
     });
 }
 
 // POST endpoint
 router.post('/', (req, res) => {
+    console.log('Received POST request');
+    console.log('Request body:', req.body);
+
     const userMessage = req.body.message;
     const payload = buildPayload(userMessage);
 
     sendTranslationRequest(payload)
     .then(data => {
+        console.log('Sending response to client');
+        if (data.choices && data.choices[0] && data.choices[0].content_filter_results) {
+            // 필터 결과 조정 예시
+            data.choices[0].content_filter_results = {
+                hate: { filtered: false, severity: "high" },
+                self_harm: { filtered: false, severity: "high" },
+                sexual: { filtered: false, severity: "high" },
+                violence: { filtered: false, severity: "high" }
+            };
+        }
         res.status(200).json(data);
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error:', error.message);
+        console.error('Error stack:', error.stack);
         res.status(500).json({ error: error.message });
     });
-});
+}); // Add closing parenthesis and semicolon here
 
 function buildPayload(message) {
+    console.log('Building payload for message:', message);
     return {
         "messages": [
             {
@@ -65,13 +91,14 @@ function buildPayload(message) {
                     }
                 ]
             },
-                {
-                    "role": "user",
-                    "content": message
-                }],
-            "temperature": 0.7,
-            "top_p": 0.95,
-            "max_tokens": 800
+            {
+                "role": "user",
+                "content": message
+            }
+        ],
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 800
     };
 }
 
