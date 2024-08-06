@@ -1,5 +1,5 @@
-const sync = require('./models/sync');
-sync();
+// const sync = require('./models/sync');
+// sync();
 const dotenv = require('dotenv');
 const express = require('express');
 const morgan = require('morgan');
@@ -8,7 +8,7 @@ const cors = require('cors');
 dotenv.config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 const checkAuth = require('./routers/authorization');
 const userRouter = require('./routers/userRouter');
