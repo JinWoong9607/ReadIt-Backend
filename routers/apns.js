@@ -1,5 +1,7 @@
 const apn = require('apn');
 const { User } = require('../models');
+const { DefaultAzureCredential } = require('@azure/identity'); 
+const { Secretclient } = require('@azure/keyvault-secrets');
 
 const sendAPNS = async (userId, message) => {
   try {
@@ -9,9 +11,17 @@ const sendAPNS = async (userId, message) => {
       return;
     }
 
+    const credential = new DefaultAzureCredential();
+    const vaultname = process.env.KEY_VAULT_NAME;
+    const url = `https://${vaultname}.vault.azure.net`;
+    const client = new Secretclient(url, credential); 
+
+    const apnKeySecret = await client.getSectet('APN-KEY');
+    const apnKey = apnKeySecret.value;
+
     const options = {
       token: {
-        key: process.env.APN_KEY_PATH,
+        key: apnKey,
         keyId: process.env.APN_KEY_ID,
         teamId: process.env.APN_TEAM_ID,
       },
