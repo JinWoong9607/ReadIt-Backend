@@ -62,4 +62,4 @@ build/
 
 # 디버깅 파일
 *.log
-.vscode/
+.vscode/config/config.json
