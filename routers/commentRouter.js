@@ -2,66 +2,77 @@ const express = require('express');
 const { Comment, sequelize } = require('../models');
 const { Sequelize, Op } = require('sequelize');
 const router = express.Router();
+const { sendAPNS } = require('./apns');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const secret = process.env.JWT_SECRET;
 
-router.post('/create', async (req, res) => {    
+router.post('/create', async (req, res) => {
     const {
+      commentId,
+      body,
+      userId,
+      author,
+      parentCommentId,
+      commentBody,
+      score,
+      time,
+      depth,
+      stickied,
+      directURL,
+      isCollapsed,
+      isRootCollapsed,
+    } = req.body;
+  
+    console.log('Preparing to create comment with:', req.body);
+    console.log('Received input:', { commentId, body, userId, author, parentCommentId, commentBody, score, time, depth, stickied, directURL, isCollapsed, isRootCollapsed });
+  
+    const transaction = await sequelize.transaction();
+    try {
+      const comment = await Comment.create({
         commentId,
-        body, 
         userId,
         author,
         parentCommentId,
         commentBody,
         score,
         time,
+        body,
         depth,
         stickied,
         directURL,
         isCollapsed,
         isRootCollapsed,
-         } = req.body;
-
-        console.log('Preparing to create comment with:', req.body);
-         
-        console.log('Received input:', { commentId, body, userId, author, parentCommentId, commentBody, score, time, depth, stickied, directURL, isCollapsed, isRootCollapsed });
-
-        const transaction = await sequelize.transaction();
-    try {
-        const comment = await Comment.create({
-            commentId,
-            userId,
-            author,
-            parentCommentId,
-            commentBody,
-            score,
-            time,
-            body,
-            depth,
-            stickied,
-            directURL,
-            isCollapsed,
-            isRootCollapsed,
-        }, { transaction });
-
-        await transaction.commit();
-
-        res.json({
-            success: true,
-            message: 'Comment created successfully.',
-            comment
-        });
+      }, { transaction });
+  
+      await transaction.commit();
+  
+      // 부모 댓글이 있는 경우 APNS 전송
+      if (parentCommentId) {
+        const parentComment = await Comment.findByPk(parentCommentId);
+        if (parentComment) {
+          const message = `${author}님이 회원님의 댓글에 답글을 달았습니다: ${body.substring(0, 50)}...`;
+          await sendAPNS(parentComment.userId, message);
+        }
+      }
+  
+      res.json({
+        success: true,
+        message: 'Comment created successfully.',
+        comment
+      });
     } catch (err) {
-        await transaction.rollback();
-        console.error("An error occurred:", err.message);
-        console.error(err.stack);  
-        res.status(500).json({
-            success: false,
-            message: 'Internal server error.'
-        });
+      await transaction.rollback();
+      console.error("An error occurred:", err.message);
+      console.error(err.stack);
+      
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error.'
+      });
     }
-}); 
+  });
+  
 
 router.get('/read/*', async (req, res) => {
     try {
