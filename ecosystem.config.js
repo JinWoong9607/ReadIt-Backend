@@ -6,9 +6,9 @@ module.exports = {
     authrestart: true,
     watch: '.',
     env: {
-      SERVER_PORT: 3000,
+      SERVER_PORT: 8080,
       Mysql_HOST: 'localhost',
-      Mysql_PORT: 3000,
+      Mysql_PORT: 8080,
       Mysql_user: 'root',
       Mysql_password: 'vkdltjs!23',
       Mysql_database: 'readIt',
