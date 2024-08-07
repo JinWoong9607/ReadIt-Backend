@@ -16,10 +16,10 @@ module.exports = {
     dialect: "mysql"
   },
   production: {
-    username: process.env.PROD_DB_USERNAME,
-    password: process.env.PROD_DB_PASSWORD ,
-    database: process.env.PROD_DB_NAME ,
-    host: process.env.PROD_DB_HOST ,
+    username: process.env.AZURE_MYSQL_USER,
+    password: process.env.AZURE_MYSQL_PASSWORD ,
+    database: process.env.AZURE_MYSQL_DATABASE,
+    host: process.env.AZURE_MYSQL_HOST,
     dialect: "mysql",
     dialectOptions: {
       ssl: {
