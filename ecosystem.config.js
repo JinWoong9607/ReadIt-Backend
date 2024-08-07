@@ -6,9 +6,9 @@ module.exports = {
     authrestart: true,
     watch: 'false',
     env: {
-      SERVER_PORT: 3000,
-      Mysql_HOST: 8080,
-      Mysql_PORT: 3306,
+      SERVER_PORT: process.env.PORT,
+      Mysql_HOST: process.env.AZURE_MYSQL_HOST,
+      Mysql_PORT: process.env.AZURE_MYSQL_PORT,
       Mysql_user: process.env.AZURE_MYSQL_USER,
       Mysql_password: process.env.AZURE_MYSQL_PASSWORD,
       Mysql_database: process.env.AZURE_MYSQL_DATABASE,
