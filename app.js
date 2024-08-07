@@ -43,17 +43,20 @@ app.listen(port, () => {
 
 const startServer = async () => {
     try {
-      await sequelize.sync();
-      console.log('Database synchronized');
-  
-      app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-      });
-    } catch (error) {
-      console.error('Unable to synchronize the database:', error);
-    }
-  };
+        await sequelize.authenticate();
+        console.log('Database connection has been established successfully.');
 
+        await sequelize.sync();
+        console.log('Database synchronized');
+
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Unable to start the server:', error);
+        process.exit(1);
+    }
+};
 
 startServer();
 
