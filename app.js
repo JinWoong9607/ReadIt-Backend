@@ -42,7 +42,7 @@ app.listen(port, () => {
 
 const startServer = async () => {
     try {
-      await sync();
+      await sequelize.sync();
       console.log('Database synchronized');
   
       app.listen(port, () => {
