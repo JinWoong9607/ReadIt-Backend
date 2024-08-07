@@ -1,4 +1,5 @@
-const sync = require('./models/sync');
+// const sync = require('./models/sync');
+// sync();
 const dotenv = require('dotenv');
 const express = require('express');
 const morgan = require('morgan');
@@ -40,18 +41,5 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
-
-const startServer = async () => {
-    try {
-      await sync();
-      app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-      });
-    } catch (err) {
-      console.error('Failed to start server:', err);
-    }
-  };
-  
-  startServer();
 
 module.exports = app;
