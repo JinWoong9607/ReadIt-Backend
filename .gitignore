@@ -44,8 +44,6 @@ Thumbs.db
 *.swo
 *.sublime-workspace
 
-# package manager 설정
-config.json
 
 # 빌드 출력
 dist/
