@@ -1,5 +1,3 @@
-// const sync = require('./models/sync');
-// sync();
 const dotenv = require('dotenv');
 const express = require('express');
 const morgan = require('morgan');
@@ -41,5 +39,22 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+const startServer = async () => {
+    try {
+      await sync();
+      console.log('Database synchronized');
+  
+      app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+      });
+    } catch (error) {
+      console.error('Unable to synchronize the database:', error);
+    }
+  };
+
+
+startServer();
+
 
 module.exports = app;

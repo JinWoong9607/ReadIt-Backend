@@ -1,11 +1,13 @@
-const { sequelize } = require('./index.js');
+const { sequelize } = require('./index');
 
-const sync = () => {
-    sequelize
-    .sync({ force: false, alter: true })
-    .then(() => console.log('DB sync complete'))
-    .catch(err => {console.log(err)
-    });
+const sync = async () => {
+  try {
+    await sequelize.sync({ force: false, alter: true });
+    console.log('Database synced');
+  } catch (error) {
+    console.error('Unable to sync database:', error);
+    throw error;
+  }
 };
 
 module.exports = sync;
