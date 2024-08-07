@@ -8,7 +8,7 @@ const connection = mysql.createConnection(process.env.DATABASE_URL);
 dotenv.config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 const { sequelize } = require('./models');
 
 const checkAuth = require('./routers/authorization');
