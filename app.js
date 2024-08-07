@@ -7,6 +7,7 @@ dotenv.config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 8080;
+const { sequelize } = require('./models');
 
 const checkAuth = require('./routers/authorization');
 const userRouter = require('./routers/userRouter');
