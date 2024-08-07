@@ -5,12 +5,16 @@ const path = require('path');
 const config = require('../config/config.js')[env];
 const db = {};
 
-let sequelize = new Sequelize(
-  config.database, 
-  config.username, 
-  config.password, 
-  config
-);
+const sequelize = new Sequelize(process.env.AZURE_MYSQL_DATABASE, process.env.AZURE_MYSQL_USER, process.env.AZURE_MYSQL_PASSWORD, {
+  host: process.env.AZURE_MYSQL_HOSTT,
+  dialect: 'mysql',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false 
+    }
+  }
+});
 
 const User = require('./user');
 const Comment = require('./comment');
