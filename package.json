@@ -2,7 +2,7 @@
   "name": "readit-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"No tests specified\" && exit 0",
     "start": "node app.js"

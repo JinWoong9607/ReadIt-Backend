@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const process = require('process');
 const env = process.env.NODE_ENV || 'development';
 const path = require('path');
-const config = require(path.join(__dirname, '..', 'config', 'config.js'))[env];
+const config = require('../config/config.js')[env];
 const db = {};
 
 let sequelize = new Sequelize(
