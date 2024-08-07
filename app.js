@@ -3,10 +3,13 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
+const mysql = require('mysql2');
+const connection = mysql.createConnection(process.env.DATABASE_URL);
 dotenv.config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
+const { sequelize } = require('./models');
 
 const checkAuth = require('./routers/authorization');
 const userRouter = require('./routers/userRouter');
@@ -42,17 +45,20 @@ app.listen(port, () => {
 
 const startServer = async () => {
     try {
-      await sync();
-      console.log('Database synchronized');
-  
-      app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-      });
-    } catch (error) {
-      console.error('Unable to synchronize the database:', error);
-    }
-  };
+        await sequelize.authenticate();
+        console.log('Database connection has been established successfully.');
 
+        await sequelize.sync({ force: false, alter: true });
+        console.log('Database synchronized');
+
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Unable to start the server:', error);
+        process.exit(1);
+    }
+};
 
 startServer();
 
