@@ -8,7 +8,7 @@ module.exports = {
     env: {
       SERVER_PORT: 8080,
       Mysql_HOST: 'localhost',
-      Mysql_PORT: 8080,
+      Mysql_PORT: 3306,
       Mysql_user: 'root',
       Mysql_password: 'vkdltjs!23',
       Mysql_database: 'readIt',

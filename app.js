@@ -6,7 +6,7 @@ const cors = require('cors');
 dotenv.config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-const port = process.env.AZURE_MYSQL_PORT || 3306;
+const port = process.env.PORT || 8080;
 
 const checkAuth = require('./routers/authorization');
 const userRouter = require('./routers/userRouter');
