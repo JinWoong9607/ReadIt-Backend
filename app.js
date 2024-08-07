@@ -3,6 +3,8 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
+const mysql = require('mysql2');
+const connection = mysql.createConnection(process.env.DATABASE_URL);
 dotenv.config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
