@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const { sequelize } = require('.');
 
 class User extends Sequelize.Model {
     static init(sequelize) {
