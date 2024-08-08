@@ -12,6 +12,7 @@ module.exports = {
       Mysql_user: process.env.AZURE_MYSQL_USER,
       Mysql_password: process.env.AZURE_MYSQL_PASSWORD,
       Mysql_database: process.env.AZURE_MYSQL_DATABASE,
+      JWT_SECRET: process.env.JWT_SECRET
     },
   },],
 };
