@@ -21,8 +21,6 @@ yarn-error.log*
 # 디버깅 디렉토리
 node_modules/
 jspm_packages/
-package-lock.json
-package.json
 
 # OS에서 생성된 파일
 .DS_Store
@@ -45,8 +43,6 @@ Thumbs.db
 *.swo
 *.sublime-workspace
 
-# package manager 설정
-config.json
 
 # 빌드 출력
 dist/
@@ -63,4 +59,4 @@ build/
 
 # 디버깅 파일
 *.log
-.vscode/
+.vscode/config/config.json

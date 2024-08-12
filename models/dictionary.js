@@ -19,7 +19,7 @@ class Dictionary extends Sequelize.Model {
                 },
                 meaning: {
                     type: Sequelize.STRING(500),
-                    allowNull: false
+                    allowNull: true
                 },
             },
             {

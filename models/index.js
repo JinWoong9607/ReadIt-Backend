@@ -1,15 +1,19 @@
 const Sequelize = require('sequelize');
 const process = require('process');
-const env = process.env.NODE_ENV || 'development';
-const config = require('../config/config.json')[env];
+const env = process.env.NODE_ENV || 'production';
+const path = require('path');
+const config = require('../config/config.js')[env];
 const db = {};
 
-let sequelize = new Sequelize(
-  config.database, 
-  config.username, 
-  config.password, 
-  config
-);
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'mysql',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  }
+});
 
 const User = require('./user');
 const Comment = require('./comment');

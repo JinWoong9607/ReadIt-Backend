@@ -1,20 +1,70 @@
-const sync = require('./models/sync');
-sync();
-
+const dotenv = require('dotenv');
 const express = require('express');
 const morgan = require('morgan');
-const dotenv = require('dotenv');
+const helmet = require('helmet');
+const cors = require('cors');
+const mysql = require('mysql2');
+const connection = mysql.createConnection(process.env.DATABASE_URL);
 dotenv.config();
-const port = process.env.PORT || 3000;
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+const port = process.env.PORT || 8080;
+const { sequelize } = require('./models');
+
 const checkAuth = require('./routers/authorization');
 const userRouter = require('./routers/userRouter');
+const dictionaryRouter = require('./routers/dictionaryRouter');
+const commentRouter = require('./routers/commentRouter');
+const translator = require('./routers/translator');
 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use('/user', userRouter);
-app.use((_, res) => {
+app.use('/comment', checkAuth);
+app.use('/dictionary', checkAuth);
+app.use('/comment', commentRouter);
+app.use('/dictionary', dictionaryRouter);
+app.use('isAuth', checkAuth);
+app.use('/translate', translator);
+
+app.use((req, res, next) => {
     res.status(404).send('404 Not Found');
 });
-app.listen(port);
+
+// 글로벌 에러 핸들러
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+});
+
+const startServer = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Database connection has been established successfully.');
+
+        await sequelize.sync({ force: false, alter: true });
+        console.log('Database synchronized');
+
+        app.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+    } catch (error) {
+        console.error('Unable to start the server:', error);
+        process.exit(1);
+    }
+};
+
+
+startServer();
+
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+  });
+
+module.exports = app;
