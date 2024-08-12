@@ -21,7 +21,6 @@ yarn-error.log*
 # 디버깅 디렉토리
 node_modules/
 jspm_packages/
-package-lock.json
 
 # OS에서 생성된 파일
 .DS_Store
